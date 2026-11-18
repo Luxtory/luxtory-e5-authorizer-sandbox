@@ -1,3 +1,4 @@
+# SANDBOX DA E5 — VARIANTE ADULTERADA (prova do critério 2: sem o if, com sonda do secret). Nunca na main.
 # SANDBOX DA E5 — nunca roda neste repositório (não está em .github/workflows). Publicado só no repositório de teste
 # Luxtory/luxtory-e5-authorizer-sandbox, no mesmo caminho do workflow real (spec booking §10.16).
 # É o workflow `.github/workflows/booking-authorizer.yml` mais um overlay de sandbox: o service container `postgres`
@@ -24,7 +25,6 @@ permissions:
 jobs:
   authorize:
     name: authorize
-    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     environment: booking-authorizer
     timeout-minutes: 10
@@ -41,6 +41,10 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
+      - name: 'Probe: secret presence (adulterated branch, no if)'
+        run: if [ -n "$PROBE" ]; then echo "secret present"; else echo "secret absent"; fi
+        env:
+          PROBE: ${{ secrets.BOOKING_AUTHORIZER_DATABASE_URL }}
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
